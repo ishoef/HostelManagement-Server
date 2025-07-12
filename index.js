@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const admin = require("firebase-admin");
 
 dotenv.config();
 const app = express();
@@ -11,15 +12,37 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Firebase Admin
+const serviceAccount = require("./firebase-admin-key.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 // Custom Middlewares
 const verifyFBToken = async (req, res, next) => {
   const authHeader = req.headers.Authorization;
 
+  // Header check
   if (!authHeader) {
     return res.status(401).send({ message: "unauthorized Access" });
   }
 
-  next();
+  // Token check
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).send({ message: "unauthorized Access" });
+  }
+
+  // Verify the token
+
+  try {
+    const decoded = await admin.auth().verifyIdToken(token);
+    req.decoded = decoded;
+    next();
+  } catch (error) {
+    return res.status(403).send({ message: "forbidden Access" });
+  }
 };
 
 // MongoDB Setup

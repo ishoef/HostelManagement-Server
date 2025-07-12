@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "unihostel-eee3a",
+  "private_key_id": "d6ed3720cbf553870398907d680960673259ddd1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDKixJUvqvGza1d\nMHEwKcMa3DRQiDrG0ME0NOY3BiMnBoVG6nOBOreqQPyX7kCeGgFNw/eUuKefGhfF\nisNNO0k2OaKen2mkth73WgOM7XFewPT554ou5+hjJGo+gpAmg77AL8MM6sSBD3zM\nDE8FvP8cY1iFaCJy4XLrVOeNUCmP8HR5O6pBd6Odg2xRUzQlS5MGc/YV/OJ08WAv\ncqGodK/EdgvW8EyIGHq4BeozvomtP2T2hG9Qq2vE1SOJQ+fGSMdDOHQth0DXE8j2\na6pk0v5vi8Ur+6SGFlzSfEFy7tIMJKlxI8jpek0BeNvzhe2cYcxYLofZ1iqwbe1L\nrrjwqCwbAgMBAAECggEAQOr5SaNBcHts5REJPlwsVjgdJnC7kgzH2CFaZml3q+L5\npcSwl8uHobCppVKucF46a7/zYz4aL7MPyneS6HannRM1Da1fkXT0EOjPeYSDUVD8\nU/sD/cvD3r8FtJppdIbGhVfppwK6T/l0UPxi+Z5dkC5BaaT6YaLkEAyLGO6IG8Nu\nwSmRGaqASK/f7VAFK0s7AvSFgvCeHjc6hGS4S1YDC7hbh5rdfz6uKcZhSy/zEKvC\nBnav2bQjfzZQUpuqcVmEU50GQoPMPg1gZujOjBawmyhQ8FeaZKfyjrinSbvG1HS7\nb8G9jZY7Bo1KHv6cpw/S201c8kyLowmAaLim/nLbwQKBgQDkdSrTDcm1KNcIgQZU\nst4WKVTLStnQa8Hjrp7uMxdDc/ngrOzR3Ga7VHeV81ammuhMxB1E5GH5HxM+vJWF\nNziErHNM0rL9b6C9/yVLcYRN6BCLRFZxd9jc5eUOzd607FT5eBWTBdKCS96gxBBL\nSemFRUOuudJS4jiuv5aAtdO0QQKBgQDi9h0Pr+Wm/9mqDYSFLARR6EwNp3gmMIi0\n5G5FIeP3UEqNFuMNvUjVoZhF6ZSkSAJSzxYS5APRxvOnbOIYU25/AwzEi8EaDGJx\nvm/bYLWxsemOduNW623f4PL+CiyIozz6abZthS6nquFBrxBJ9lQCX2VgRiMOLyTa\nY7FpQ5zZWwKBgBzBZq+EB8SGrHJEk0Br9ypA74xbEol6VsBKxXRj9+Skn2oZOgG8\nRS4FFrxIEbsMunqXILwAJxjNQYXfBM7swW9pqWWdC6x8tXXUvKP/WNDZieONqXfE\nxwYe5bL0VLjfGl8AL27/B50g4ZfItehUGFGPA1LlzsRh9xJ/yPjQaiJBAoGBANi0\nI7Vpvr4AhmTvOTwqdgl64rsazwavyqflgEA0BsWJ/VTPqIXi2JtaCtmeGFXvh4Bn\nyGzLF7aB3v1aYlrVtqhBUjyMMBld/9UY/xaZNYLwG8/yRkkky6k60Ois8C6apkt3\nCj9yLcTbzO55Z/Um5LnLOjF9ZlVRwD9hdvDKJQYHAoGAauHHWSmUZ7+Bl9cUIoy0\nl0/Cv6iTQNqZbfYlQgv6vjrtNc7miJBTp6M3SFVANBMYyv2G448tJE+FWyVVGRgw\nzuLukshfK/kn42Y1UfiIt8+E6JBH25mirKuFUS/YOVSoD7+Cp0mZ8wU8X7iAsHOX\nWh/i/48so/nM0HLWeaa8/W0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@unihostel-eee3a.iam.gserviceaccount.com",
+  "client_id": "100779888779249255051",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40unihostel-eee3a.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
