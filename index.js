@@ -11,6 +11,17 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Custom Middlewares
+const verifyFBToken = async (req, res, next) => {
+  const authHeader = req.headers.Authorization;
+
+  if (!authHeader) {
+    return res.status(401).send({ message: "unauthorized Access" });
+  }
+
+  next();
+};
+
 // MongoDB Setup
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@hobbyshop.bhkkg8e.mongodb.net/?retryWrites=true&w=majority&appName=HobbyShop`;
 
@@ -46,6 +57,9 @@ async function run() {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
       res.send(result);
+
+      console.log(result);
+      console.log(user);
     });
 
     // Send a ping to confirm a successful connection
