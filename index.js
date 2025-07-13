@@ -64,10 +64,10 @@ async function run() {
 
     const db = client.db("UniHostel");
     const usersCollection = db.collection("users");
-    
-    
-    // User Collection
-    // Post Users
+    const mealsCollection = db.collection("meals");
+
+    // 👩 User Collection
+    // ✅ Post Users
     app.post("/users", async (req, res) => {
       const email = req.body.email;
 
@@ -86,11 +86,33 @@ async function run() {
       console.log(user);
     });
 
-    // Get Users Collection
+    // ✅ Get Users Collection
     app.get("/users", async (req, res) => {
       try {
         const users = await usersCollection.find().toArray();
         res.status(200).send(users);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Failed to fetch users" });
+      }
+    });
+
+    // 🍔 Meals Collection
+    // ✅ Post The All Meals
+
+    app.post("/meals", async (req, res) => {
+      const meal = req.body;
+      const result = await mealsCollection.insertOne(meal);
+
+      res.send(result);
+      console.log("Successfully Post the meals");
+    });
+
+    // ✅ Get the all Meals
+    app.get("/meals", verifyFBToken, async (req, res) => {
+      try {
+        const meals = await mealsCollection.find().toArray();
+        res.status(200).send(meals);
       } catch (error) {
         console.log(error);
         res.status(500).send({ message: "Failed to fetch users" });
