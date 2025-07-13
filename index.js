@@ -64,8 +64,9 @@ async function run() {
 
     const db = client.db("UniHostel");
     const usersCollection = db.collection("users");
+    
+    
     // User Collection
-
     // Post Users
     app.post("/users", async (req, res) => {
       const email = req.body.email;
@@ -83,6 +84,17 @@ async function run() {
 
       console.log(result);
       console.log(user);
+    });
+
+    // Get Users Collection
+    app.get("/users", async (req, res) => {
+      try {
+        const users = await usersCollection.find().toArray();
+        res.status(200).send(users);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Failed to fetch users" });
+      }
     });
 
     // Send a ping to confirm a successful connection
