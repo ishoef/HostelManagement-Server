@@ -115,7 +115,7 @@ async function run() {
         res.status(200).send(meals);
       } catch (error) {
         console.log(error);
-        res.status(500).send({ message: "Failed to fetch users" });
+        res.status(500).send({ message: "Failed to fetch meals Data" });
       }
     });
 
