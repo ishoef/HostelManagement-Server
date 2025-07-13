@@ -19,19 +19,21 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-// Custom Middlewares
+// 🆕 Custom Middlewares
 const verifyFBToken = async (req, res, next) => {
-  const authHeader = req.headers.Authorization;
+  const authHeader = req.headers.authorization;
 
   // Header check
   if (!authHeader) {
-    return res.status(401).send({ message: "unauthorized Access" });
+    return res.status(401).send({ message: "unauthorized toekn Access" });
   }
 
   // Token check
   const token = authHeader.split(" ")[1];
+  console.log(token);
+
   if (!token) {
-    return res.status(401).send({ message: "unauthorized Access" });
+    return res.status(401).send({ message: "token problem" });
   }
 
   // Verify the token
