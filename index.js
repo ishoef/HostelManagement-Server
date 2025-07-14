@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const admin = require("firebase-admin");
 
 dotenv.config();
@@ -30,7 +30,6 @@ const verifyFBToken = async (req, res, next) => {
 
   // Token check
   const token = authHeader.split(" ")[1];
-  console.log(token);
 
   if (!token) {
     return res.status(401).send({ message: "token problem" });
@@ -65,8 +64,14 @@ async function run() {
     await client.connect();
 
     const db = client.db("UniHostel");
+
+    // Collections
+    // 👩 User Collection
+    // 🍔 Meals Collection
+    // 🥩 Upcomming Meals Collection
     const usersCollection = db.collection("users");
     const mealsCollection = db.collection("meals");
+    const upcomingMealsCollection = db.collection("upcomingMeals");
 
     // 👩 User Collection
     // ✅ Post Users
@@ -83,9 +88,6 @@ async function run() {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
       res.send(result);
-
-      console.log(result);
-      console.log(user);
     });
 
     // ✅ Get Users Collection
@@ -100,8 +102,8 @@ async function run() {
     });
 
     // 🍔 Meals Collection
-    // ✅ Post The All Meals
 
+    // ✅ Post The All Meals
     app.post("/meals", async (req, res) => {
       const meal = req.body;
       const result = await mealsCollection.insertOne(meal);
@@ -120,6 +122,45 @@ async function run() {
         res.status(500).send({ message: "Failed to fetch meals Data" });
       }
     });
+
+    // ✅ Update the Meals
+    app.put("/meals/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const meal = req.body;
+      const updateDoc = {
+        $set: {
+          title: meal.title,
+          category: meal.category,
+          ingredients: meal.ingredients,
+          description: meal.description,
+          postTime: meal.postTime,
+          price: meal.price,
+        },
+      };
+
+      const options = { upsert: true };
+      const result = await mealsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+
+      res.status(200).send(result);
+      console.log(`Meal with id ${id} updated successfully`);
+    });
+
+    // ✅ Delete a group by id
+    app.delete("/meals/:id", verifyFBToken, async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await mealsCollection.deleteOne(query);
+      res.status(200).send(result);
+      console.log(`Meal with id ${id} deleted successfully`);
+    });
+
+    // 🥩Upcomming Meals Collection
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
