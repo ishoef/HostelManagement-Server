@@ -161,6 +161,61 @@ async function run() {
     });
 
     // 🥩Upcomming Meals Collection
+    // ✅ Post The Upcomming Meals
+    app.post("/upcomming-meals", async (req, res) => {
+      const upcomingMeal = req.body;
+      const result = await upcomingMealsCollection.insertOne(upcomingMeal);
+
+      res.status(200).send(result);
+      console.log("Successfully Post the upcomming meals");
+    });
+
+    // ✅ Get All Upcomming Meals
+    app.get("/upcomming-meals", async (req, res) => {
+      try {
+        const upcomingMeal = await upcomingMealsCollection.find().toArray();
+        res.status(200).send(upcomingMeal);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Failed to fetch upcoming meals" });
+      }
+    });
+
+    // ✅ Update the Upcomming Meals
+    app.put("/upcomming-meals/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const upcomingMeal = req.body;
+      const updateDoc = {
+        $set: {
+          title: upcomingMeal.title,
+          category: upcomingMeal.category,
+          ingredients: upcomingMeal.ingredients,
+          description: upcomingMeal.description,
+          postTime: upcomingMeal.postTime,
+          price: upcomingMeal.price,
+        },
+      };
+
+      const options = { upsert: true };
+      const result = await upcomingMealsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+
+      res.status(200).send(result);
+      console.log(`Upcomming Meal with id ${id} updated successfully`);
+    });
+
+    // ✅ Delete Upcomming Meal by Id
+    app.delete("/upcomming-meals/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await upcomingMealsCollection.deleteOne(query);
+      res.status(200).send(result);
+      console.log(`Upcomming Meal with id ${id} Deleted Successfully`);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
