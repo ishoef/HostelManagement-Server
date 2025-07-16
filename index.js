@@ -101,10 +101,52 @@ async function run() {
       }
     });
 
-    // 🍔 Meals Collection
+    // ✅ Get Users by Search for making admin
+    app.get("/users/search", async (req, res) => {
+      const emailQuery = req.query.email;
+      if (!emailQuery) {
+        return res.status(400).send({ message: "Missing email query" });
+      }
 
+      const regex = new RegExp(emailQuery, "i");
+
+      try {
+        const users = await usersCollection
+          .find({ email: { $regex: regex } })
+          .project({ email: 1, createdAt: 1, role: 1 })
+          .limit(10)
+          .toArray();
+
+        res.send(users);
+      } catch (error) {
+        console.error("Error searching users", error);
+        res.status(500).send({ message: "Error searching users" });
+      }
+    });
+
+    // ✅ User Role Update
+    app.patch("/users/:id/role", async (req, res) => {
+      const { id } = req.params;
+      const { role } = req.body;
+
+      if (!["admin", "user"].includes(role)) {
+        return res.status(400).send({ message: "Invalid role, not match" });
+      }
+
+      try {
+        const result = await usersCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { role } }
+        );
+      } catch (error) {
+        console.log(" Error updating user role ", error);
+        res.status(500).send({ message: "Failed to update user role" });
+      }
+    });
+
+    // 🍔 Meals Collection
     // ✅ Post The All Meals
-    app.post("/meals", async (req, res) => {
+    app.post("/meals", verifyFBToken, async (req, res) => {
       const meal = req.body;
       const result = await mealsCollection.insertOne(meal);
 
@@ -112,15 +154,60 @@ async function run() {
       console.log("Successfully Post the meals");
     });
 
-    // ✅ Get the all Meals
-    app.get("/meals", verifyFBToken, async (req, res) => {
+    // ✅ Get all Meals with optional filters
+    app.get("/meals", async (req, res) => {
       try {
-        const meals = await mealsCollection.find().toArray();
+        const { searchText, category, price } = req.query;
+
+        const andConditions = [];
+
+        if (searchText) {
+          andConditions.push({
+            $or: [
+              { title: { $regex: searchText, $options: "i" } },
+              { description: { $regex: searchText, $options: "i" } },
+              { category: { $regex: searchText, $options: "i" } },
+            ],
+          });
+        }
+
+        if (category && category !== "All Categories") {
+          andConditions.push({ category });
+        }
+
+        if (price) {
+          andConditions.push({
+            $expr: {
+              $lte: [{ $toDouble: "$price" }, parseFloat(price)],
+            },
+          });
+        }
+
+        const query = andConditions.length ? { $and: andConditions } : {};
+
+        const meals = await mealsCollection
+          .find(query)
+          .sort({ createdAt: -1 })
+          .toArray();
+
         res.status(200).send(meals);
       } catch (error) {
-        console.log(error);
+        console.log("Error fetching meals:", error);
         res.status(500).send({ message: "Failed to fetch meals Data" });
       }
+    });
+
+
+
+    // ✅ Get the meal Detail
+    app.get("/meals/:id", async (req, res) => {
+      const { id } = req.params;
+      const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
+      if (!meal) {
+        return res.status(404).send({ message: "Meal not found" });
+      }
+      res.status(200).send(meal);
+      console.log(`Meal with id ${id} fetched successfully`);
     });
 
     // ✅ Update the Meals
@@ -136,6 +223,7 @@ async function run() {
           description: meal.description,
           postTime: meal.postTime,
           price: meal.price,
+          imageUrl: meal.imageUrl,
         },
       };
 
@@ -158,6 +246,51 @@ async function run() {
       const result = await mealsCollection.deleteOne(query);
       res.status(200).send(result);
       console.log(`Meal with id ${id} deleted successfully`);
+    });
+
+    // Liek Count Update
+    // ✅ Like/Unlike a Meal (No token)
+    app.post("/meals/:id/like", async (req, res) => {
+      const id = req.params.id;
+      const userId = req.body.userId;
+
+      if (!userId) {
+        return res.status(400).send({ message: "Missing userId" });
+      }
+
+      const filter = { _id: new ObjectId(id) };
+
+      try {
+        let meal = await mealsCollection.findOne(filter);
+
+        if (!meal) {
+          return res.status(404).send({ message: "Meal not found" });
+        }
+
+        if (!Array.isArray(meal.likes)) {
+          await mealsCollection.updateOne(filter, { $set: { likes: [] } });
+          meal.likes = [];
+        }
+
+        let update;
+        if (meal.likes.includes(userId)) {
+          update = { $pull: { likes: userId } };
+        } else {
+          update = { $addToSet: { likes: userId } };
+        }
+
+        await mealsCollection.updateOne(filter, update);
+
+        const updatedMeal = await mealsCollection.findOne(filter);
+
+        res.send({
+          likesCount: updatedMeal.likes.length,
+          liked: updatedMeal.likes.includes(userId),
+        });
+      } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: "Error updating likes" });
+      }
     });
 
     // 🥩Upcomming Meals Collection
@@ -194,6 +327,7 @@ async function run() {
           description: upcomingMeal.description,
           postTime: upcomingMeal.postTime,
           price: upcomingMeal.price,
+          imageUrl: upcomingMeal.imageUrl,
         },
       };
 
