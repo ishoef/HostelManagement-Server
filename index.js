@@ -25,7 +25,8 @@ const verifyFBToken = async (req, res, next) => {
 
   // Header check
   if (!authHeader) {
-    return res.status(401).send({ message: "unauthorized toekn Access" });
+    console.log("Authorization header not found");
+    return res.status(401).send({ message: "unauthorized token Access" });
   }
 
   // Token check
@@ -42,9 +43,12 @@ const verifyFBToken = async (req, res, next) => {
     req.decoded = decoded;
     next();
   } catch (error) {
+    console.log("Error verifying token:", error);
     return res.status(403).send({ message: "forbidden Access" });
   }
 };
+
+
 
 // MongoDB Setup
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@hobbyshop.bhkkg8e.mongodb.net/?retryWrites=true&w=majority&appName=HobbyShop`;
@@ -73,9 +77,24 @@ async function run() {
     const mealsCollection = db.collection("meals");
     const upcomingMealsCollection = db.collection("upcomingMeals");
 
+    
+    // 🆕 Verify Admin
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+
+      if (!user || user.role !== "admin") {
+        console.log("User is not an admin");
+        return res.status(403).send({ message: "forbidden Access" });
+      }
+
+      next();
+    };
+
     // 👩 User Collection
     // ✅ Post Users
-    app.post("/users", async (req, res) => {
+    app.post("/users", verifyFBToken, async (req, res) => {
       const email = req.body.email;
 
       const existUser = await usersCollection.findOne({ email });
@@ -102,7 +121,7 @@ async function run() {
     });
 
     // ✅ Get Users by Search for making admin
-    app.get("/users/search", async (req, res) => {
+    app.get("/users/search", verifyFBToken, verifyAdmin, async (req, res) => {
       const emailQuery = req.query.email;
       if (!emailQuery) {
         return res.status(400).send({ message: "Missing email query" });
@@ -112,8 +131,8 @@ async function run() {
 
       try {
         const users = await usersCollection
-          .find({ email: { $regex: regex } })
-          .project({ email: 1, createdAt: 1, role: 1 })
+          .find({ email: { $regex: regex } }) // regex: regular expration
+          // .project({ email: 1, createdAt: 1, role: 1 })
           .limit(10)
           .toArray();
 
@@ -125,7 +144,7 @@ async function run() {
     });
 
     // ✅ User Role Update
-    app.patch("/users/:id/role", async (req, res) => {
+    app.patch("/users/:id/role", verifyFBToken, async (req, res) => {
       const { id } = req.params;
       const { role } = req.body;
 
@@ -138,9 +157,39 @@ async function run() {
           { _id: new ObjectId(id) },
           { $set: { role } }
         );
+
+        if (result.modifiedCount > 0) {
+          res.send({ success: true, message: "Role updated successfully" });
+        } else {
+          res.status(404).send({
+            success: false,
+            message: "User not found or role unchanged",
+          });
+        }
       } catch (error) {
         console.log(" Error updating user role ", error);
         res.status(500).send({ message: "Failed to update user role" });
+      }
+    });
+
+    // GET: Get User Role by Email
+    app.get("/users/:email/role", async (req, res) => {
+      try {
+        const email = req.params.email;
+        if (!email) {
+          return res.status(400).send({ message: "Email is required" });
+        }
+
+        const user = await usersCollection.findOne({ email });
+
+        if (!user) {
+          return res.status(404).send({ message: "User not found" });
+        }
+
+        res.send({ role: user.role || "user" });
+      } catch (error) {
+        console.error("Error fetching user role", error);
+        res.status(500).send({ message: "Error fetching user role" });
       }
     });
 
@@ -196,8 +245,6 @@ async function run() {
         res.status(500).send({ message: "Failed to fetch meals Data" });
       }
     });
-
-
 
     // ✅ Get the meal Detail
     app.get("/meals/:id", async (req, res) => {
