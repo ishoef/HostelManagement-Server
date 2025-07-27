@@ -85,9 +85,18 @@ async function run() {
       const query = { email: email };
       const user = await usersCollection.findOne(query);
 
-      if (!user || user.role !== "admin") {
+      if (!user) {
+        console.log("User not found in database");
+        return res
+          .status(403)
+          .send({ message: "Access denied: user not found" });
+      }
+
+      if (user.role !== "admin") {
         console.log("User is not an admin");
-        return res.status(403).send({ message: "forbidden Access" });
+        return res
+          .status(403)
+          .send({ message: "Access denied: admin privileges required" });
       }
 
       next();
@@ -774,8 +783,6 @@ async function run() {
         res.status(500).send({ message: "Failed to fetch upcoming meals" });
       }
     });
-
-
 
     // ✅ Update the Upcomming Meals
     app.put("/upcomming-meals/:id", async (req, res) => {
