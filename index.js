@@ -1126,6 +1126,11 @@ async function run() {
       }
     });
 
+    // ✅ Test Route to check if the server is running
+    app.get("/test", (req, res) => {
+      res.send({ message: "API is working!" });
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -1145,6 +1150,8 @@ app.get("/", (req, res) => {
 });
 
 // Start The Server
-app.listen(port, () => {
-  console.log(`server is running on the ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`server is running on the ${port}`);
+// });
+
+module.exports = app; // ✅ Required for Vercel
