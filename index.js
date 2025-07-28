@@ -1018,19 +1018,18 @@ async function run() {
       }
     });
 
-    // ✅ Get All Meal Requests
-    // GET /meal-requests?page=1&limit=10
+    // ✅ Get All Meal Requests with pagination and sorting
     app.get("/meal-requests", async (req, res) => {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
-
       const skip = (page - 1) * limit;
 
       try {
         const total = await mealRequestsCollection.countDocuments();
+
         const requests = await mealRequestsCollection
           .find()
-          .sort({ requestTime: -1 }) // optional: newest first
+          .sort({ requestTime: -1, _id: -1 }) 
           .skip(skip)
           .limit(limit)
           .toArray();
@@ -1045,11 +1044,14 @@ async function run() {
           },
         });
       } catch (err) {
-        res
-          .status(500)
-          .send({ success: false, message: "Failed to fetch requests" });
+        console.error(err);
+        res.status(500).send({
+          success: false,
+          message: "Failed to fetch requests",
+        });
       }
     });
+
 
     //  ✅ Patch: Amin Approves a request
     app.patch("/meal-requests/:id", async (req, res) => {
@@ -1098,16 +1100,21 @@ async function run() {
     app.get("/user-meal-requests", async (req, res) => {
       const { email, status } = req.query;
 
-      if (!email || !status) {
+      if (!email) {
         return res
           .status(400)
-          .send({ success: false, message: "Email and status are required." });
+          .send({ success: false, message: "Email is required." });
       }
 
       try {
+        const query = { email };
+        if (status) {
+          query.status = status;
+        }
+
         const requests = await mealRequestsCollection
-          .find({ email, status }) // e.g., status = "delivered" or "cancelled"
-          .sort({ requestTime: -1 }) // latest first
+          .find(query)
+          .sort({ requestedAt: -1 })
           .toArray();
 
         res.send({ success: true, data: requests });
