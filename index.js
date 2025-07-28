@@ -25,7 +25,7 @@ const verifyFBToken = async (req, res, next) => {
 
   // Header check
   if (!authHeader) {
-    console.log("Authorization header not found");
+    // console.log("Authorization header not found");
     return res.status(401).send({ message: "unauthorized token Access" });
   }
 
@@ -43,7 +43,7 @@ const verifyFBToken = async (req, res, next) => {
     req.decoded = decoded;
     next();
   } catch (error) {
-    console.log("Error verifying token:", error);
+    // console.log("Error verifying token:", error);
     return res.status(403).send({ message: "forbidden Access" });
   }
 };
@@ -63,7 +63,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("UniHostel");
 
@@ -86,14 +86,14 @@ async function run() {
       const user = await usersCollection.findOne(query);
 
       if (!user) {
-        console.log("User not found in database");
+        // console.log("User not found in database");
         return res
           .status(403)
           .send({ message: "Access denied: user not found" });
       }
 
       if (user.role !== "admin") {
-        console.log("User is not an admin");
+        // console.log("User is not an admin");
         return res
           .status(403)
           .send({ message: "Access denied: admin privileges required" });
@@ -140,7 +140,7 @@ async function run() {
           pages: Math.ceil(total / limit),
         });
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send({ message: "Failed to fetch users" });
       }
     });
@@ -163,7 +163,7 @@ async function run() {
 
         res.send(users);
       } catch (error) {
-        console.error("Error searching users", error);
+        // console.error("Error searching users", error);
         res.status(500).send({ message: "Error searching users" });
       }
     });
@@ -192,7 +192,7 @@ async function run() {
           });
         }
       } catch (error) {
-        console.log(" Error updating user role ", error);
+        // console.log(" Error updating user role ", error);
         res.status(500).send({ message: "Failed to update user role" });
       }
     });
@@ -213,7 +213,7 @@ async function run() {
 
         res.send({ role: user.role || "user" });
       } catch (error) {
-        console.error("Error fetching user role", error);
+        // console.error("Error fetching user role", error);
         res.status(500).send({ message: "Error fetching user role" });
       }
     });
@@ -230,7 +230,7 @@ async function run() {
 
         res.send(user);
       } catch (error) {
-        console.error("Error fetching user by email:", error);
+        // console.error("Error fetching user by email:", error);
         res.status(500).send({ message: "Error fetching user" });
       }
     });
@@ -259,7 +259,7 @@ async function run() {
           });
         }
       } catch (error) {
-        console.error("Error updating user data", error);
+        // console.error("Error updating user data", error);
         res.status(500).send({ message: "Error updating user data" });
       }
     });
@@ -270,8 +270,8 @@ async function run() {
       const meal = req.body;
       const result = await mealsCollection.insertOne(meal);
 
+      //   console.log("Successfully Post the meals");
       res.send(result);
-      console.log("Successfully Post the meals");
     });
 
     // ✅ Get all Meals with optional filters
@@ -322,7 +322,7 @@ async function run() {
           totalMeals: total,
         });
       } catch (error) {
-        console.log("Error fetching meals:", error);
+        // console.log("Error fetching meals:", error);
         res.status(500).send({ message: "Failed to fetch meals Data" });
       }
     });
@@ -335,7 +335,7 @@ async function run() {
         return res.status(404).send({ message: "Meal not found" });
       }
       res.status(200).send(meal);
-      console.log(`Meal with id ${id} fetched successfully`);
+      //   console.log(`Meal with id ${id} fetched successfully`);
     });
 
     // ✅ Update the Meals
@@ -363,17 +363,17 @@ async function run() {
       );
 
       res.status(200).send(result);
-      console.log(`Meal with id ${id} updated successfully`);
+      //   console.log(`Meal with id ${id} updated successfully`);
     });
 
     // ✅ Delete a group by id
     app.delete("/meals/:id", verifyFBToken, async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      //   console.log(id);
       const query = { _id: new ObjectId(id) };
       const result = await mealsCollection.deleteOne(query);
       res.status(200).send(result);
-      console.log(`Meal with id ${id} deleted successfully`);
+      //   console.log(`Meal with id ${id} deleted successfully`);
     });
 
     // 🆕 Riviews Store
@@ -465,7 +465,7 @@ async function run() {
           meal: finalMeal,
         });
       } catch (error) {
-        console.error("Error submitting review:", error);
+        // console.error("Error submitting review:", error);
         res.status(500).send({ message: "Failed to submit review" });
       }
     });
@@ -503,7 +503,7 @@ async function run() {
           reviews: paginatedReviews,
         });
       } catch (err) {
-        console.error("Failed to get reviews:", err);
+        // console.error("Failed to get reviews:", err);
         res.status(500).send({ message: "Failed to load reviews" });
       }
     });
@@ -555,7 +555,7 @@ async function run() {
           reviews: paginatedData,
         });
       } catch (error) {
-        console.error("Failed to fetch user reviews:", error);
+        // console.error("Failed to fetch user reviews:", error);
         res.status(500).send({ message: "Failed to get user reviews" });
       }
     });
@@ -614,7 +614,7 @@ async function run() {
 
         res.send({ success: true, message: "Review deleted successfully" });
       } catch (error) {
-        console.error("Failed to delete review:", error);
+        // console.error("Failed to delete review:", error);
         res.status(500).send({ message: "Internal server error" });
       }
     });
@@ -652,7 +652,7 @@ async function run() {
 
         res.send({ success: true, message: "Review updated" });
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).send({ message: "Internal server error" });
       }
     });
@@ -695,7 +695,7 @@ async function run() {
 
         res.send({ success: true, message: "Review deleted" });
       } catch (err) {
-        console.error("Failed to delete review:", err);
+        // console.error("Failed to delete review:", err);
         res.status(500).send({ message: "Internal server error" });
       }
     });
@@ -740,7 +740,7 @@ async function run() {
           liked: updatedMeal.likes.includes(userId),
         });
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).send({ message: "Error updating likes" });
       }
     });
@@ -752,7 +752,7 @@ async function run() {
       const result = await upcomingMealsCollection.insertOne(upcomingMeal);
 
       res.status(200).send(result);
-      console.log("Successfully Post the upcomming meals");
+      //   console.log("Successfully Post the upcomming meals");
     });
 
     // ✅ Get All Upcomming Meals
@@ -779,7 +779,7 @@ async function run() {
           meals,
         });
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send({ message: "Failed to fetch upcoming meals" });
       }
     });
@@ -809,7 +809,7 @@ async function run() {
       );
 
       res.status(200).send(result);
-      console.log(`Upcomming Meal with id ${id} updated successfully`);
+      //   console.log(`Upcomming Meal with id ${id} updated successfully`);
     });
 
     // ✅ Delete Upcomming Meal by Id
@@ -818,7 +818,7 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await upcomingMealsCollection.deleteOne(query);
       res.status(200).send(result);
-      console.log(`Upcomming Meal with id ${id} Deleted Successfully`);
+      //   console.log(`Upcomming Meal with id ${id} Deleted Successfully`);
     });
 
     // ✅ POST: Manual Publish an Upcoming Meal
@@ -845,7 +845,7 @@ async function run() {
           .status(200)
           .send({ success: true, message: "Meal Published Successfully" });
       } catch (error) {
-        console.log("Error publishing upcoming meal:", error);
+        // console.log("Error publishing upcoming meal:", error);
         res.status(500).send({ message: "Failed to publish meal" });
       }
     });
@@ -904,7 +904,7 @@ async function run() {
           liked,
         });
       } catch (err) {
-        console.error("Like error:", err);
+        // console.error("Like error:", err);
         res.status(500).send({ message: "Error processing like" });
       }
     });
@@ -913,7 +913,7 @@ async function run() {
     // ✅ Payment Gateway Integration
     app.post("/create-payment-intent", async (req, res) => {
       const { price } = req.body;
-      console.log(price);
+      //   console.log(price);
 
       const result = req.body;
       console.log(result);
@@ -933,7 +933,7 @@ async function run() {
     // ✅ Store Payment Information in the mongoDB
     app.post("/payments", async (req, res) => {
       const paymentData = req.body;
-      console.log("Payment Data:", paymentData);
+      //   console.log("Payment Data:", paymentData);
       try {
         const result = await paymentsCollection.insertOne(paymentData);
         res.send({
@@ -958,7 +958,7 @@ async function run() {
 
         res.send(payments);
       } catch (error) {
-        console.error("Failed to fetch payment history:", error);
+        // console.error("Failed to fetch payment history:", error);
         res.status(500).json({ error: "Failed to fetch payments" });
       }
     });
@@ -1011,7 +1011,7 @@ async function run() {
 
         console.log("Successfully Insert The Request");
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         res
           .status(500)
           .send({ success: false, message: "Internal Server Error" });
@@ -1044,7 +1044,7 @@ async function run() {
           },
         });
       } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).send({
           success: false,
           message: "Failed to fetch requests",
@@ -1118,7 +1118,7 @@ async function run() {
 
         res.send({ success: true, data: requests });
       } catch (err) {
-        console.error("Failed to fetch user's requests:", err);
+        // console.error("Failed to fetch user's requests:", err);
         res.status(500).send({
           success: false,
           message: "Failed to fetch user's meal requests.",
@@ -1132,10 +1132,10 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -1145,13 +1145,13 @@ run().catch(console.dir);
 
 // Sample Route
 app.get("/", (req, res) => {
-  console.log("Hotel Server is running");
+  //   console.log("Hotel Server is running");
   res.send("Hostel Management Server is running");
 });
 
 // Start The Server
-// app.listen(port, () => {
-//   console.log(`server is running on the ${port}`);
-// });
+app.listen(port, () => {
+  console.log(`server is running on the ${port}`);
+});
 
-module.exports = app; // ✅ Required for Vercel
+// module.exports = app; // ✅ Required for Vercel
