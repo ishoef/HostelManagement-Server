@@ -67,6 +67,10 @@ async function run() {
 
     const db = client.db("UniHostel");
 
+    if (!db) {
+      throw new Error("Database connection failed");
+    }
+
     // Collections
     // 👩 User Collection
     // 🍔 Meals Collection
@@ -140,8 +144,8 @@ async function run() {
           pages: Math.ceil(total / limit),
         });
       } catch (error) {
-        // console.log(error);
-        res.status(500).send({ message: "Failed to fetch users" });
+        console.log(error);
+        res.status(500).send({ message: "Failed to fetch users", error });
       }
     });
 
