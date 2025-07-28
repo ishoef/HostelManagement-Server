@@ -275,57 +275,57 @@ async function run() {
     });
 
     // ✅ Get all Meals with optional filters
-   app.get("/meals", async (req, res) => {
-     try {
-       const { page = 1, limit = 10, searchText, category, price } = req.query;
+    app.get("/meals", async (req, res) => {
+      try {
+        const { page = 1, limit = 10, searchText, category, price } = req.query;
 
-       const query = {};
-       const andConditions = [];
+        const query = {};
+        const andConditions = [];
 
-       if (searchText) {
-         andConditions.push({
-           $or: [
-             { title: { $regex: searchText, $options: "i" } },
-             { description: { $regex: searchText, $options: "i" } },
-             { category: { $regex: searchText, $options: "i" } },
-           ],
-         });
-       }
+        if (searchText) {
+          andConditions.push({
+            $or: [
+              { title: { $regex: searchText, $options: "i" } },
+              { description: { $regex: searchText, $options: "i" } },
+              { category: { $regex: searchText, $options: "i" } },
+            ],
+          });
+        }
 
-       if (category && category !== "All Categories") {
-         andConditions.push({ category });
-       }
+        if (category && category !== "All Categories") {
+          andConditions.push({ category });
+        }
 
-       if (price) {
-         andConditions.push({
-           $expr: {
-             $lte: [{ $toDouble: "$price" }, parseFloat(price)],
-           },
-         });
-       }
+        if (price) {
+          andConditions.push({
+            $expr: {
+              $lte: [{ $toDouble: "$price" }, parseFloat(price)],
+            },
+          });
+        }
 
-       if (andConditions.length) {
-         query.$and = andConditions;
-       }
+        if (andConditions.length) {
+          query.$and = andConditions;
+        }
 
-       const total = await mealsCollection.countDocuments(query);
+        const total = await mealsCollection.countDocuments(query);
 
-       const meals = await mealsCollection
-         .find(query)
-         .sort({ createdAt: -1 })
-         .skip((parseInt(page) - 1) * parseInt(limit))
-         .limit(parseInt(limit))
-         .toArray();
+        const meals = await mealsCollection
+          .find(query)
+          .sort({ createdAt: -1 })
+          .skip((parseInt(page) - 1) * parseInt(limit))
+          .limit(parseInt(limit))
+          .toArray();
 
-       res.status(200).send({
-         data: meals,
-         totalMeals: total,
-       });
-     } catch (error) {
-       console.log("Error fetching meals:", error);
-       res.status(500).send({ message: "Failed to fetch meals Data" });
-     }
-   });
+        res.status(200).send({
+          data: meals,
+          totalMeals: total,
+        });
+      } catch (error) {
+        console.log("Error fetching meals:", error);
+        res.status(500).send({ message: "Failed to fetch meals Data" });
+      }
+    });
 
     // ✅ Get the meal Detail
     app.get("/meals/:id", async (req, res) => {
@@ -1029,7 +1029,7 @@ async function run() {
 
         const requests = await mealRequestsCollection
           .find()
-          .sort({ requestTime: -1, _id: -1 }) 
+          .sort({ requestTime: -1, _id: -1 })
           .skip(skip)
           .limit(limit)
           .toArray();
@@ -1051,7 +1051,6 @@ async function run() {
         });
       }
     });
-
 
     //  ✅ Patch: Amin Approves a request
     app.patch("/meal-requests/:id", async (req, res) => {
@@ -1142,7 +1141,7 @@ run().catch(console.dir);
 // Sample Route
 app.get("/", (req, res) => {
   console.log("Hotel Server is running");
-  res.send("Hotel Server is running");
+  res.send("Hostel Management Server is running");
 });
 
 // Start The Server
