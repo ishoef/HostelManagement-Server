@@ -113,9 +113,10 @@ async function run() {
 
       const existUser = await usersCollection.findOne({ email });
       if (existUser) {
-        return res
-          .status(500)
-          .send({ message: "user already exists", inserted: false });
+        return res.status(409).send({
+          message: "User already exists",
+          inserted: false,
+        });
       }
 
       const user = req.body;
@@ -788,7 +789,7 @@ async function run() {
       }
     });
 
-    // ✅ Update the Upcomming Meals
+    // ✅ Update the Upcomming Meals 
     app.put("/upcomming-meals/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -1157,5 +1158,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`server is running on the ${port}`);
 });
-
-// module.exports = app; // ✅ Required for Vercel
